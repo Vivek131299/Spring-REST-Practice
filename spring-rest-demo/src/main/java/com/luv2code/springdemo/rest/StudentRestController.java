@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,8 +64,47 @@ public class StudentRestController {
 	@GetMapping("/students/{studentId}")
 	public Student getStudent(@PathVariable int studentId) {
 		
-		// just index into the list
+		///// Updating this REST Service/Controller to throw the Exception /////
+		// As we have seen earlier, if we pass path variable out of bound in the URL 
+		// (for e.g.- if we pass /students/9999, while list has only 10 elements), then we 
+		// get the Exception and error page on the browser.
+		// To handle this Exception, we created our custom StudentNotFoundException.
+		// (See StudentNotFoundException class and StudentErrorResponse class).
 		
+		// So, check the studentId against list size
+		if ((studentId >= theStudents.size()) || (studentId < 0)) {
+			throw new StudentNotFoundException("Student id not found - " + studentId);
+		}
+		
+		
+		// just index into the list
 		return theStudents.get(studentId); // So 'studentId' here is the index.
+	}
+	
+	
+	// Add an Exception Handler for our new custom StudentNotFoundException using @ExceptionHandler.
+	
+	@ExceptionHandler
+	public ResponseEntity<StudentErrorResponse> handleException(StudentNotFoundException exc) {
+	// So this is an Exception Handler method.
+	// ResponseEntity<StudentErrorResponse> - type of the response body is StudentErrorResponse. (See StudentErrorResponse class).
+	// handleException(StudentNotFoundException exc) - can handle/catch StudentNotFoundException type of Exception. (See StudentNotFoundException class).
+		
+		
+		// create a StudentErrorResponse
+		StudentErrorResponse error = new StudentErrorResponse();
+		
+		// set the values
+		error.setStatus(HttpStatus.NOT_FOUND.value()); // This is 404 error
+		error.setMessage(exc.getMessage());
+	    error.setTimeStamp(System.currentTimeMillis());
+		
+	    
+		// return ResponseEntity
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		// Here, 'error' is the body and 'HttpStatus.NOT_FOUND' is the status code.
+		
+		// So Jackson will take our custom Exception POJO class converting it to JSON accordingly.
+		// And we will see status, message, time stamp as JSON response in browser after giving bad request.
 	}
 }
