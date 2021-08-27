@@ -107,4 +107,29 @@ public class StudentRestController {
 		// So Jackson will take our custom Exception POJO class converting it to JSON accordingly.
 		// And we will see status, message, time stamp as JSON response in browser after giving bad request.
 	}
+	
+	
+	///// GENERIC EXCEPTION HANDLER /////
+	// As we can see in the output, if we pass any characters instead of integer as a path variable
+	// in the URL, then we are getting an Exception. And we don't have an Exception handler for that.
+	// In above handler, we were only checking the integer bounds with the size of ArrayList.
+	
+	// add another exception handler... doing catch all... to catch any Exception
+	@ExceptionHandler
+	public ResponseEntity<StudentErrorResponse> handleException(Exception exc) {
+	// So here, we are giving 'Exception exc' which will get all Exceptions (Generic).
+		
+		// create a StudentErrorResponse
+		StudentErrorResponse error = new StudentErrorResponse();
+		
+		// set the values
+		error.setStatus(HttpStatus.BAD_REQUEST.value()); // This is 400 error
+		error.setMessage(exc.getMessage());
+	    error.setTimeStamp(System.currentTimeMillis());
+		
+	    
+		// return ResponseEntity
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		// Here, 'error' is the body and 'HttpStatus.BAD_REQUEST' is the status code.
+	}
 }
