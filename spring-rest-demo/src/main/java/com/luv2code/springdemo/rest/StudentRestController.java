@@ -81,7 +81,7 @@ public class StudentRestController {
 		return theStudents.get(studentId); // So 'studentId' here is the index.
 	}
 	
-	
+	/*
 	// Add an Exception Handler for our new custom StudentNotFoundException using @ExceptionHandler.
 	
 	@ExceptionHandler
@@ -132,4 +132,13 @@ public class StudentRestController {
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		// Here, 'error' is the body and 'HttpStatus.BAD_REQUEST' is the status code.
 	}
+	*/
+	
+	// As above Exception handlers are only for this Controller,
+	// our project may have many controllers, 
+	// So, instead of adding Exception handlers to each Controller,
+	// We define Only One GLOBAL EXCEPTION HANDLER using @ControllerAdvice and will use that in each Controller.
+	// (See StudentRestExceptionHandler class).
+	//
+	// So, commenting above Exception Handlers and pasting them into new Global Exception Handler class (StudentRestExceptionHandler).
 }
